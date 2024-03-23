@@ -13,7 +13,15 @@
                 
                 include 'config.php';
 
-                $query = "SELECT * FROM user";
+                $Limit = 3;
+                if(isset($_GET['page'])){
+                    $pages = $_GET['page'];
+                }else {
+                    $pages = 1;
+                }
+                $page_offset = ($pages - 1) * $Limit;
+
+                $query = "SELECT * FROM user LIMIT $page_offset, $Limit";
 
                 $Result = mysqli_query($con, $query) or die('query unsuccessfull');
 
@@ -52,11 +60,39 @@
                           <?php }?>
                       </tbody>
                   </table>
-                  <?php }?>
-                  <ul class='pagination admin-pagination'>
-                      <li class="active"><a>1</a></li>
-                      <li><a>2</a></li>
-                      <li><a>3</a></li>
+                  <?php }
+                  
+                    $pagination_query = "SELECT * FROM user";
+
+                    $Pagination_result = mysqli_query($con, $pagination_query) or die('query unsuccessfull');
+
+                    if(mysqli_num_rows($Pagination_result) > 0) {
+                        $total_records = mysqli_num_rows($Pagination_result);
+                        
+                        $total_pages = ceil($total_records / $Limit);
+
+                        echo "<ul class='pagination admin-pagination'>";
+
+                        if($pages > 1) {
+                            echo '<li><a href="users.php?page=' . ($pages - 1) . '">prev</a></li>';
+                        }
+                        for($i = 1; $i <= $total_pages; $i++) {
+                            if($i == $pages) {
+                                $active = "active";
+                            }else {
+                                $active = "";
+                            }
+                            echo "<li class='$active'><a href='users.php?page=$i'>$i</a></li>";
+                        }
+                        if($pages < $total_pages) {
+
+                            echo '<li><a href="users.php?page=' . ($pages + 1) . '">next</a></li>';
+                        }
+
+                        echo "</ul>";
+                    }
+
+                  ?>
                   </ul>
               </div>
           </div>
