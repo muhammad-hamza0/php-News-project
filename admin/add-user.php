@@ -7,7 +7,35 @@
               </div>
               <div class="col-md-offset-3 col-md-6">
                   <!-- Form Start -->
-                  <form  action="" method ="POST" autocomplete="off">
+                  <?php 
+
+                  if(isset($_POST['save'])) {
+
+                    include 'config.php';
+
+                    $fname = mysqli_real_escape_string($con, $_POST['fname']);
+                    $lname = mysqli_real_escape_string($con, $_POST['lname']);
+                    $user = mysqli_real_escape_string($con, $_POST['user']);
+                    $password = mysqli_real_escape_string($con, md5($_POST['password']));
+                    $role = mysqli_real_escape_string($con, $_POST['role']);
+
+                    $query = "SELECT username FROM user WHERE username = '$user'";
+
+                    $result = mysqli_query($con, $query) or die('Query Unsuccessfull');
+
+                    if(mysqli_num_rows($result) > 0 ) {
+                        echo "<p style='color: red;'>Username Already Exist</p>";
+                    }else {
+                        $query2 = "INSERT INTO user (first_name, last_name, username, password, role) VALUES ('{$fname}', '$lname','$user', '$password', '$role')";
+                        mysqli_query($con, $query2) or die('query unsuccessfull');
+
+                        header("Location: {$hostname}admin/users.php");
+                    }
+
+                  }
+                  
+                  ?>
+                  <form  action="<?php $_SERVER['PHP_SELF']?>" method ="POST" autocomplete="off">
                       <div class="form-group">
                           <label>First Name</label>
                           <input type="text" name="fname" class="form-control" placeholder="First Name" required>
