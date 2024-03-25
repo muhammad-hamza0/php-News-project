@@ -1,4 +1,24 @@
-<?php include "header.php"; ?>
+<?php include "header.php"; 
+if($_SESSION['user_role'] == 0) {
+    header("Location: {$hostname}admin/post.php");
+}
+
+if(isset($_POST['save'])) {
+    $cat_name = $_POST['cat'];
+
+    include 'config.php';
+
+    $query = "INSERT INTO category(category_name) VALUES ('{$cat_name}')";
+
+    $result = mysqli_query($con, $query) or die('query failed');
+
+    if($result) {
+        header("Location: {$hostname}admin/category.php");
+    }
+
+}
+
+?>
   <div id="admin-content">
       <div class="container">
           <div class="row">
@@ -7,7 +27,7 @@
               </div>
               <div class="col-md-offset-3 col-md-6">
                   <!-- Form Start -->
-                  <form action="" method="POST" autocomplete="off">
+                  <form action="<?php $_SERVER['PHP_SELF']?>" method="POST" autocomplete="off">
                       <div class="form-group">
                           <label>Category Name</label>
                           <input type="text" name="cat" class="form-control" placeholder="Category Name" required>
