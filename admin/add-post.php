@@ -1,7 +1,7 @@
 <?php include "header.php"; 
+ include 'config.php';
 
-if(isset($_POST['submit'])) {
-
+ if(isset($_POST['submit'])) {
     if(isset($_FILES['fileToUpload'])){
         $error = array();
 
@@ -9,39 +9,43 @@ if(isset($_POST['submit'])) {
         $file_type = $_FILES['fileToUpload']['type'];
         $file_tmp = $_FILES['fileToUpload']['tmp_name'];
         $file_size = $_FILES['fileToUpload']['size'];
-        $file_extension = strtolower(end(explode('.', $file_name)));
-        $file_accept = array('jpeg, jpg, png');
+        $file_extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION)); 
+        $file_accept = array("jpeg", "jpg", "png");
 
-        if(in_array($file_extension, $file_accept) == false) {
+        if(!in_array($file_extension, $file_accept)) { 
             $error[] = "Only png, jpeg, and jpg files are accepted";
         }
 
         if($file_size > 2097152) {
-            $error[] = "Please upload less then or equal to 2mb file size";
+            $error[] = "Please upload less than or equal to 2MB file size";
         }
 
-        if(empty($error) == true) {
+        if(empty($error)) {
             move_uploaded_file($file_tmp, "upload/". $file_name);
-        }else {
+        } else {
             print_r($error);
+            die();
         }
     }
 
-    session_start();
-
-    $post_title = $_POST['post_title'];
-    $post_desc = $_POST['postdesc'];
-    $post_category = $_POST['category'];
+    if (session_status() == PHP_SESSION_NONE) { 
+        session_start(); 
+    }
+    
+    $post_title = mysqli_real_escape_string($con, $_POST['post_title']);
+    $post_desc = mysqli_real_escape_string($con, $_POST['postdesc']);
+    $post_category = mysqli_real_escape_string($con, $_POST['category']);
     $post_date = date('d M, Y');
-    $author = $_SESSION['user_id']; 
+    $author = $_SESSION['user_uid'];
 
     $insert_query = "INSERT INTO post(title, description, category, post_date, author, post_img)
-                    VALUES ('{$post_title}', '{$post_desc}', '{$post_category}', '{$post_date}', {$author}, '{$file_name}');";
-    $insert_query .= "UPDATE category SET post = post + 1 WHERE category_id =  $post_category";            
+                    VALUES('{$post_title}', '{$post_desc}', {$post_category}, '{$post_date}', {$author}, '{$file_name}')";
+    $update_query = "UPDATE category SET post = post + 1 WHERE category_id = {$post_category}";
 
-    if(mysqli_multi_query($con, $insert_query)) {
+    if(mysqli_query($con, $insert_query) && mysqli_query($con, $update_query)) {
         header("Location: {$hostname}admin/post.php");
-    }else {
+        exit(); 
+    } else {
         echo "<div class='alert alert-danger'>Query Failed</div>";
     }
 }
@@ -70,7 +74,7 @@ if(isset($_POST['submit'])) {
                               <option value="" disabled> Select Category</option>
                               <?php 
                               
-                              include 'config.php';
+                             
 
                               $query = "SELECT * FROM category";
 

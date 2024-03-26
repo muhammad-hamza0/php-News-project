@@ -63,7 +63,7 @@ if(isset($_SESSION['username'])) {
                                     session_start();
 
                                     $_SESSION['username'] = $_POST['username'];
-                                    $_SESSION['password'] = $_POST['password'];
+                                    $_SESSION['user_uid'] = $row['user_id'];
                                     $_SESSION['user_role'] = $row['role'];
 
                                     header("Location: {$hostname}admin/post.php");

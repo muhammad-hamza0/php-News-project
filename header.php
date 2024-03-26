@@ -34,12 +34,28 @@
 <div id="menu-bar">
     <div class="container">
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-md-11">
                 <ul class='menu'>
                     <li><a href='category.php'>Business</a></li>
                     <li><a href='category.php'>Entertainment</a></li>
                     <li><a href='category.php'>Sports</a></li>
                     <li><a href='category.php'>Politics</a></li>
+                </ul>
+            </div>
+            <div class="col-md-1">
+                <ul class='menu'>
+                    <?php 
+                    if(session_status() == PHP_SESSION_NONE) {
+                        session_start();
+                    }
+                    if(isset($_SESSION['username'])) {
+                        echo "<li><a href='admin/post.php'>Admin</a></li>";
+                    }else {
+                        echo "<li><a href='admin'>Login</a></li>";
+                    }
+                    
+                    ?>
+                    
                 </ul>
             </div>
         </div>

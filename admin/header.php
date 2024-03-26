@@ -38,8 +38,17 @@ if(!isset($_SESSION['username'])) {
                     </div>
                     <!-- /LOGO -->
                       <!-- LOGO-Out -->
-                    <div class="col-md-offset-9  col-md-1">
-                        <a href="logout.php" class="admin-logout" >logout</a>
+                    <div class="col-md-10 text-right">
+                        <a href="logout.php" class="admin-logout" >
+                        <?php 
+                        if(session_status() == PHP_SESSION_NONE) {
+
+                            session_start();
+                        }
+                        $username = $_SESSION['username'];
+                        echo "<span>$username</span>";
+                        ?>    
+                        logout</a>
                     </div>
                     <!-- /LOGO-Out -->
                 </div>
