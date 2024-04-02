@@ -1,4 +1,4 @@
-<?php include "header.php"; 
+<?php include "header.php";
 
 include 'config.php';
 
@@ -106,4 +106,4 @@ if($_SESSION['user_role'] == 0) {
           </div>
       </div>
   </div>
-<?php include "header.php"; ?>
+<?php include "footer.php"; ?>
