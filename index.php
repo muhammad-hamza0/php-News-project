@@ -88,7 +88,7 @@
                                 }else {
                                     $active = '';
                                 }
-                                echo "<li><a class='$active' href='index.php?page=$i'>$i</a></li>";
+                                echo "<li class='$active'><a href='index.php?page=$i'>$i</a></li>";
                             }
                             echo "</ul>";
                         }
