@@ -20,8 +20,12 @@
             $error[] = "Please upload less than or equal to 2MB file size";
         }
 
+        $image_file = time() . '-' . $file_name;
+
+        $target = "upload/" . $image_file;
+
         if(empty($error)) {
-            move_uploaded_file($file_tmp, "upload/". $file_name);
+            move_uploaded_file($file_tmp, $target);
         } else {
             print_r($error);
             die();
@@ -39,7 +43,7 @@
     $author = $_SESSION['user_uid'];
 
     $insert_query = "INSERT INTO post(title, description, category, post_date, author, post_img)
-                    VALUES('{$post_title}', '{$post_desc}', {$post_category}, '{$post_date}', {$author}, '{$file_name}')";
+                    VALUES('{$post_title}', '{$post_desc}', {$post_category}, '{$post_date}', {$author}, '{$image_file}')";
     $update_query = "UPDATE category SET post = post + 1 WHERE category_id = {$post_category}";
 
     if(mysqli_query($con, $insert_query) && mysqli_query($con, $update_query)) {

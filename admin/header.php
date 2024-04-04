@@ -32,9 +32,24 @@ if(!isset($_SESSION['username'])) {
             <div class="container">
                 <!-- row -->
                 <div class="row">
+                    <?php 
+                    $query = "SELECT * FROM settings";
+
+                    $result = mysqli_query($con, $query) or die('Query Failed: Read Settings Data');
+                    
+                    ?>
                     <!-- LOGO -->
                     <div class="col-md-2">
-                        <a href="../index.php"><img class="logo" src="images/news.jpg"></a>
+                        <?php 
+                        if(mysqli_num_rows($result) > 0) {
+                            $row = mysqli_fetch_assoc($result);
+                            $logo_img = $row['logo_img'];
+                            echo "<a href='../index.php'><img class='logo' src='images/$logo_img'></a>";
+                        }else {
+                            echo "<a href='../index.php'><img class='logo' src='images/news.jpg'></a>";
+                        }
+                        ?>
+                        
                     </div>
                     <!-- /LOGO -->
                       <!-- LOGO-Out -->
@@ -72,6 +87,9 @@ if(!isset($_SESSION['username'])) {
                             </li>
                             <li>
                                 <a href="users.php">Users</a>
+                            </li>
+                            <li>
+                                <a href="settings.php">Settings</a>
                             </li>
                             <?php }?>
                         </ul>

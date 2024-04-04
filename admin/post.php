@@ -41,7 +41,6 @@
                         ORDER BY post.post_id DESC LIMIT $page_offset, $limit";
                 }
 
-
                 $result = mysqli_query($con, $query) or die('Query failed');
 
                 if(mysqli_num_rows($result) > 0) {
@@ -83,7 +82,11 @@
                   </table>
                   <?php }
                   
-                  $pagination_query = "SELECT * FROM post";
+                  if($_SESSION['user_role'] == 1) {
+                      $pagination_query = "SELECT * FROM post";
+                  }else {
+                        $pagination_query = "SELECT * FROM post WHERE author = $user_id";
+                  }
 
                   $pagination_result = mysqli_query($con, $pagination_query) or die('Query Failed');
 
@@ -100,8 +103,8 @@
                         }else {
                             $active = '';
                         }
-                        echo "<li><a class='$active' href='post.php?page=$i'>$i</a></li>";
-                    }
+                        echo "<li class='$active'><a href='post.php?page=$i'>$i</a></li>";
+                    }   
                     echo "</ul>";
                   }
                   

@@ -1,6 +1,17 @@
 <?php include "header.php"; 
 include 'config.php';
 
+$post_id2 = $_GET['id'];
+
+$query2 = "SELECT * FROM post WHERE post_id = $post_id2";
+
+$result = mysqli_query($con, $query2) or die('Query Failed USER POST CHECK');
+$row2 = mysqli_fetch_assoc($result);
+
+if($_SESSION['user_uid'] != $row2['author']) {
+    header("Location: {$hostname}admin/post.php");
+}
+
 if(isset($_POST['submit'])) {
 
     if(empty($_FILES['new_image']['name'])) {
@@ -23,8 +34,12 @@ if(isset($_POST['submit'])) {
             $error[] = "Please upload less than or equal to 2MB file size";
         }
 
+        $image_file = time() . '-' . $file_name;
+
+        $target = "upload/" . $image_file;
+
         if(empty($error)) {
-            move_uploaded_file($file_tmp, "upload/". $file_name);
+            move_uploaded_file($file_tmp, $target);
         } else {
             print_r($error);
             die();
@@ -35,10 +50,16 @@ if(isset($_POST['submit'])) {
     $post_title = $_POST['post_title'];
     $post_desc = $_POST['postdesc'];
     $post_category = $_POST['category'];
+    $old_category = $_POST['old_category'];
 
-    $Update_query = "UPDATE post SET title='{$post_title}', description='{$post_desc}', category={$post_category}, post_img='{$file_name}' WHERE post_id = $post_id";
+    $Update_query = "UPDATE post SET title='{$post_title}', description='{$post_desc}', category={$post_category}, post_img='{$image_file}' WHERE post_id = $post_id;";
 
-    $Update_result = mysqli_query($con, $Update_query) or die('Query Failed');
+    if($old_category != $post_category) {
+        $Update_query .= "UPDATE category SET post = post - 1 WHERE category_id = {$old_category};";    
+        $Update_query .= "UPDATE category SET post = post + 1 WHERE category_id = {$post_category}";    
+    }
+
+    $Update_result = mysqli_multi_query($con, $Update_query) or die('Query Failed: Update Post');
 
     if($Update_result) {
         header("Location: {$hostname}admin/post.php");
@@ -108,6 +129,7 @@ if(isset($_POST['submit'])) {
                     }
                     ?>
                 </select>
+                <input type="hidden" name="old_category" value="<?php echo $row['category']?>">
             </div>
             <div class="form-group">
                 <label for="">Post image</label>
